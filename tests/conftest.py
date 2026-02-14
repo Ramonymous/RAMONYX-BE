@@ -153,6 +153,7 @@ async def auth_headers(test_user: User) -> dict:
     access_token = create_access_token(subject=str(test_user.id))
     return {"Authorization": f"Bearer {access_token}"}
 
+
 @pytest_asyncio.fixture(scope="function")
 async def sample_permissions(db_session: AsyncSession) -> list[Permission]:
     """Create sample permissions for testing."""
@@ -169,9 +170,7 @@ async def sample_permissions(db_session: AsyncSession) -> list[Permission]:
 
     permissions = []
     for code, description in permissions_data:
-        result = await db_session.execute(
-            select(Permission).where(Permission.code == code)
-        )
+        result = await db_session.execute(select(Permission).where(Permission.code == code))
         existing = result.scalars().first()
         if not existing:
             permission = Permission(id=uuid4(), code=code, description=description)

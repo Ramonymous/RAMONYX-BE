@@ -1,0 +1,273 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "18"
+
+jobs:
+  # Code Quality Checks
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Run Ruff linting
+      run: |
+        uv run ruff check .
+
+    - name: Run Ruff formatting check
+      run: |
+        uv run ruff format --check .
+
+    - name: Run MyPy type checking
+      run: |
+        uv run mypy app/ --ignore-missing-imports
+
+    - name: Run Bandit security check
+      run: |
+        uv run bandit -r app/ -f json -o bandit-report.json || true
+        uv run bandit -r app/
+
+    - name: Run Pydocstyle
+      run: |
+        uv run pydocstyle app/ || true
+
+  # Unit Tests
+  test:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: erp_test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Run database migrations
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/erp_test_db
+      run: |
+        uv run alembic upgrade head
+
+    - name: Run tests
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/erp_test_db
+        SECRET_KEY: test-secret-key
+        ENVIRONMENT: testing
+      run: |
+        uv run pytest tests/ -v --cov=app --cov-report=xml --cov-report=html
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          htmlcov/
+          bandit-report.json
+
+  # Security Scanning
+  security:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Integration Tests
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: erp_test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Run database migrations
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/erp_test_db
+      run: |
+        uv run alembic upgrade head
+
+    - name: Run integration tests
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/erp_test_db
+        SECRET_KEY: test-secret-key
+        ENVIRONMENT: testing
+      run: |
+        uv run pytest tests/ -v -m "integration" --cov=app --cov-report=term-missing
+
+    - name: Test application startup
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/erp_test_db
+        SECRET_KEY: test-secret-key
+        ENVIRONMENT: testing
+      run: |
+        uv run python -c "from app.main import app; print('✅ Application starts successfully')"
+
+  # Deploy to Staging
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [test, security, integration-test]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to staging
+      run: |
+        echo "Deploy to staging environment"
+        # Add your staging deployment commands here
+        # Example: scp to server, restart service, etc.
+
+  # Deploy to Production
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [test, security, integration-test]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to production
+      run: |
+        echo "Deploy to production environment"
+        # Add your production deployment commands here
+        # Example: scp to server, restart service, etc.
+
+  # Notify on failure
+  notify:
+    runs-on: ubuntu-latest
+    needs: [test, security, integration-test]
+    if: failure()
+    
+    steps:
+    - name: Notify on failure
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#dev-alerts'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      if: always()

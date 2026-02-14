@@ -1,0 +1,85 @@
+name: Development Checks
+
+on:
+  push:
+    branches: [ feature/*, bugfix/*, hotfix/* ]
+  pull_request:
+    branches: [ feature/*, bugfix/*, hotfix/* ]
+
+jobs:
+  quick-checks:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Quick syntax check
+      run: |
+        uv run python -m py_compile app/**/*.py
+
+    - name: Run Ruff (fast mode)
+      run: |
+        uv run ruff check . --no-fix --exit-zero
+
+    - name: Run critical tests only
+      run: |
+        uv run pytest tests/test_auth.py -v --tb=short
+
+  build-check:
+    runs-on: ubuntu-latest
+    needs: quick-checks
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Test application imports
+      run: |
+        uv run python -c "import app.main; print('✅ Application imports successfully')"
+
+    - name: Test database models
+      run: |
+        uv run python -c "
+        from app.models.base import Base
+        from app.models.auth import User, Role, Permission
+        from app.models.inventory import StockBalance, StockLedger
+        print('✅ All models import successfully')
+        "
+
+    - name: Test API endpoints structure
+      run: |
+        uv run python -c "
+        from app.main import app
+        from fastapi.routing import APIRoute
+        routes = [route for route in app.routes if isinstance(route, APIRoute)]
+        print(f'✅ Application has {len(routes)} API routes')
+        "

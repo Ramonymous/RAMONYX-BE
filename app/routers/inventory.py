@@ -104,26 +104,26 @@ async def create_stock_movement(
         if movement.from_location_id:
             # Create OUT entry
             out_ledger = StockLedger(
-                id=uuid.uuid7(),
+                id=uuid.uuid4(),
                 product_id=movement.product_id,
                 location_id=movement.from_location_id,
                 transaction_type="OUT",
                 quantity=-movement.quantity,
                 reference_type="STOCK_MOVEMENT",
-                reference_id=str(uuid.uuid7()),
+                reference_id=str(uuid.uuid4()),
                 notes=f"Transfer to location {movement.to_location_id}",
             )
             ledger_entries.append(out_ledger)
 
         # Create IN entry
         in_ledger = StockLedger(
-            id=uuid.uuid7(),
+            id=uuid.uuid4(),
             product_id=movement.product_id,
             location_id=movement.to_location_id,
             transaction_type="IN",
             quantity=movement.quantity,
             reference_type="STOCK_MOVEMENT",
-            reference_id=str(uuid.uuid7()),
+            reference_id=str(uuid.uuid4()),
             notes=f"Transfer from location {movement.from_location_id}" if movement.from_location_id else "Stock in",
         )
         ledger_entries.append(in_ledger)
@@ -137,7 +137,7 @@ async def create_stock_movement(
         return {
             "success": True,
             "message": f"Stock movement completed: {movement.quantity} units",
-            "movement_id": str(uuid.uuid7()),
+            "movement_id": str(uuid.uuid4()),
         }
 
     except Exception as e:

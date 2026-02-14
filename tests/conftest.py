@@ -4,7 +4,7 @@ Test configuration and fixtures for the ERP backend.
 
 import asyncio
 from collections.abc import AsyncGenerator, Generator
-from uuid import uuid7
+from uuid import uuid4
 
 import os
 
@@ -105,14 +105,14 @@ async def test_user(db_session: AsyncSession) -> User:
     """Create a test user with super_admin role."""
     # Create permissions
     permissions = [
-        Permission(id=uuid7(), code="users:read", description="Can read users"),
-        Permission(id=uuid7(), code="users:create", description="Can create users"),
-        Permission(id=uuid7(), code="users:update", description="Can update users"),
-        Permission(id=uuid7(), code="users:delete", description="Can delete users"),
-        Permission(id=uuid7(), code="inventory:read", description="Can read inventory"),
-        Permission(id=uuid7(), code="inventory:create", description="Can create inventory"),
-        Permission(id=uuid7(), code="inventory:update", description="Can update inventory"),
-        Permission(id=uuid7(), code="inventory:delete", description="Can delete inventory"),
+        Permission(id=uuid4(), code="users:read", description="Can read users"),
+        Permission(id=uuid4(), code="users:create", description="Can create users"),
+        Permission(id=uuid4(), code="users:update", description="Can update users"),
+        Permission(id=uuid4(), code="users:delete", description="Can delete users"),
+        Permission(id=uuid4(), code="inventory:read", description="Can read inventory"),
+        Permission(id=uuid4(), code="inventory:create", description="Can create inventory"),
+        Permission(id=uuid4(), code="inventory:update", description="Can update inventory"),
+        Permission(id=uuid4(), code="inventory:delete", description="Can delete inventory"),
     ]
 
     for permission in permissions:
@@ -120,7 +120,7 @@ async def test_user(db_session: AsyncSession) -> User:
 
     # Create role
     super_admin_role = Role(
-        id=uuid7(),
+        id=uuid4(),
         name="super_admin",
         description="Super Administrator",
     )
@@ -129,7 +129,7 @@ async def test_user(db_session: AsyncSession) -> User:
 
     # Create user
     test_user = User(
-        id=uuid7(),
+        id=uuid4(),
         username="testuser",
         email="test@example.com",
         hashed_password=hash_password("testpass123"),
@@ -169,7 +169,7 @@ async def sample_permissions(db_session: AsyncSession) -> list[Permission]:
 
     permissions = []
     for code, description in permissions_data:
-        permission = Permission(id=uuid7(), code=code, description=description)
+        permission = Permission(id=uuid4(), code=code, description=description)
         db_session.add(permission)
         permissions.append(permission)
 
@@ -183,7 +183,7 @@ async def sample_role(db_session: AsyncSession, sample_permissions: list[Permiss
     inventory_permissions = [p for p in sample_permissions if p.code.startswith("inventory:")]
 
     role = Role(
-        id=uuid7(),
+        id=uuid4(),
         name="inventory_manager",
         description="Inventory Manager",
     )
@@ -200,7 +200,7 @@ async def sample_role(db_session: AsyncSession, sample_permissions: list[Permiss
 async def inventory_user(db_session: AsyncSession, sample_role: Role) -> User:
     """Create a user with inventory manager role."""
     user = User(
-        id=uuid7(),
+        id=uuid4(),
         username="inventory_user",
         email="inventory@example.com",
         hashed_password=hash_password("inventory_password"),
@@ -225,7 +225,7 @@ async def inventory_auth_headers(inventory_user: User) -> dict:
 
 
 # Markers for different test categories
-pytest_plugins = []
+pytest_plugins: list[str] = []
 
 
 def pytest_configure(config):

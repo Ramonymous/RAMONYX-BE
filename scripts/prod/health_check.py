@@ -8,6 +8,8 @@ import asyncio
 import sys
 from datetime import datetime
 
+
+import psutil
 from sqlalchemy import text
 
 from app.core.config import settings
@@ -16,9 +18,9 @@ from app.database import SessionLocal, engine
 
 class HealthChecker:
     def __init__(self) -> None:
-        self.issues = []
-        self.warnings = []
-        self.info = []
+        self.issues: list[str] = []
+        self.warnings: list[str] = []
+        self.info: list[str] = []
 
     def add_issue(self, message: str) -> None:
         self.issues.append(f"❌ {message}")
@@ -40,6 +42,7 @@ class HealthChecker:
         except Exception as e:
             self.add_issue(f"Database connection failed: {e}")
             return False
+        return False
 
     async def check_database_tables(self) -> bool:
         """Check if essential tables exist and have data."""
@@ -105,11 +108,11 @@ class HealthChecker:
                 """)
                 )
                 size_bytes = size_bytes_result.scalar()
-                size_gb = size_bytes / (1024**3)
+                size_gb = (size_bytes or 0) / (1024**3)
 
                 self.add_info(f"Database size: {size}")
 
-                if size_gb > 10:  # Warn if > 10GB
+                if size_gb is not None and size_gb > 10:  # Warn if > 10GB
                     self.add_warning(f"Database size is large: {size_gb:.2f} GB")
 
                 return True
@@ -162,8 +165,6 @@ class HealthChecker:
     async def check_memory_usage(self) -> bool:
         """Check memory usage (basic check)."""
         try:
-            import psutil
-
             memory = psutil.virtual_memory()
 
             self.add_info(f"Memory usage: {memory.percent:.1f}%")
@@ -192,6 +193,8 @@ class HealthChecker:
                 """)
                 )
                 recent_users = result.scalar()
+                if recent_users is None:
+                    recent_users = 0
 
                 # Check recent orders
                 result = await db.execute(
@@ -201,6 +204,8 @@ class HealthChecker:
                 """)
                 )
                 recent_orders = result.scalar()
+                if recent_orders is None:
+                    recent_orders = 0
 
                 if recent_users > 0:
                     self.add_info(f"Recent users (24h): {recent_users}")

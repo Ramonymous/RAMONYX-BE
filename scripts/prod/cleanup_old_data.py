@@ -17,9 +17,9 @@ from app.database import SessionLocal
 class DataCleaner:
     def __init__(self, dry_run: bool = True) -> None:
         self.dry_run = dry_run
-        self.actions = []
-        self.warnings = []
-        self.info = []
+        self.actions: list[str] = []
+        self.warnings: list[str] = []
+        self.info: list[str] = []
 
     def add_action(self, message: str, count: int = 0) -> None:
         prefix = "Would" if self.dry_run else "Will"
@@ -45,7 +45,7 @@ class DataCleaner:
                 """),
                     {"cutoff_date": cutoff_date},
                 )
-                old_count = result.scalar()
+                old_count = result.scalar() or 0
 
                 if old_count == 0:
                     self.add_info("No old stock ledger entries to archive")
@@ -119,7 +119,7 @@ class DataCleaner:
                 """),
                     {"cutoff_date": cutoff_date},
                 )
-                old_count = result.scalar()
+                old_count = result.scalar() or 0
 
                 if old_count == 0:
                     self.add_info("No old sessions to clean up")
@@ -186,7 +186,7 @@ class DataCleaner:
                 """),
                     {"cutoff_date": cutoff_date},
                 )
-                old_count = result.scalar()
+                old_count = result.scalar() or 0
 
                 if old_count == 0:
                     self.add_info("No old audit logs to clean up")

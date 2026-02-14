@@ -70,7 +70,7 @@ async def create_work_center(
     import uuid
 
     db_work_center = WorkCenter(
-        id=uuid.uuid7(),
+        id=uuid.uuid4(),
         code=work_center.code,
         name=work_center.name,
         type=work_center.type,
@@ -117,7 +117,7 @@ async def create_bom(
     import uuid
 
     db_bom = BOM(
-        id=uuid.uuid7(),
+        id=uuid.uuid4(),
         product_id=bom.product_id,
         bom_name=bom.bom_name,
         version=bom.version,
@@ -163,7 +163,7 @@ async def create_production_order(
     import uuid
 
     db_production_order = ProductionOrder(
-        id=uuid.uuid7(),
+        id=uuid.uuid4(),
         order_number=production_order.order_number,
         bom_id=production_order.bom_id,
         work_center_id=production_order.work_center_id,

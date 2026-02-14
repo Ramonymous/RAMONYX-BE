@@ -630,13 +630,13 @@ class SampleDataSeeder:
                     """
                 ),
                 {
-                    "id": uuid.uuid7(),
+                    "id": uuid.uuid4(),
                     "product_id": product[0],
                     "location_id": location.id,
                     "qty": quantity,
                     "transaction_type": "purchase",
                     "ref_type": "purchase_order_item",
-                    "ref_id": uuid.uuid7(),
+                    "ref_id": uuid.uuid4(),
                     "created_by": None,
                 },
             )
@@ -675,13 +675,13 @@ class SampleDataSeeder:
                     """
                 ),
                 {
-                    "id": uuid.uuid7(),
+                        "id": uuid.uuid4(),
                     "product_id": product[0],
                     "location_id": location.id,
                     "qty": quantity,
                     "transaction_type": "purchase",
                     "ref_type": "purchase_order_item",
-                    "ref_id": uuid.uuid7(),
+                        "ref_id": uuid.uuid4(),
                     "created_by": None,
                 },
             )

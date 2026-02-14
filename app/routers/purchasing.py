@@ -68,7 +68,7 @@ async def create_supplier(
     import uuid
 
     db_supplier = Supplier(
-        id=uuid.uuid7(),
+        id=uuid.uuid4(),
         code=supplier.code,
         name=supplier.name,
         contact_person=supplier.contact_person,
@@ -176,7 +176,7 @@ async def create_purchase_order(
     import uuid
 
     db_po = PurchaseOrder(
-        id=uuid.uuid7(),
+        id=uuid.uuid4(),
         po_number=po.po_number,
         supplier_id=po.supplier_id,
         status=po.status,

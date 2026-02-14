@@ -121,7 +121,7 @@ async def create_sales_order(
 
     # Create sales order
     db_order = SalesOrder(
-        id=uuid.uuid7(),
+        id=uuid.uuid4(),
         so_number=new_so_number,
         customer_id=order_data.customer_id,
         status=order_data.status or "draft",
@@ -138,7 +138,7 @@ async def create_sales_order(
         total_amount += item_total
 
         db_item = SalesOrderItem(
-            id=uuid.uuid7(),
+            id=uuid.uuid4(),
             so_id=db_order.id,
             product_id=item_data.product_id,
             qty_ordered=item_data.quantity,

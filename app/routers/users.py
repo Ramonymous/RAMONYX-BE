@@ -99,7 +99,7 @@ async def create_role(
         raise HTTPException(status_code=400, detail="Role name already exists")
 
     # Create role
-    db_role = Role(id=uuid.uuid7(), name=role.name, description=role.description, is_active=role.is_active)
+    db_role = Role(id=uuid.uuid4(), name=role.name, description=role.description, is_active=role.is_active)
     db.add(db_role)
 
     # Add permissions to role
@@ -176,7 +176,7 @@ async def create_user(
 
     # Create user
     db_user = User(
-        id=uuid.uuid7(),
+        id=uuid.uuid4(),
         username=user.username,
         email=user.email,
         full_name=user.full_name,

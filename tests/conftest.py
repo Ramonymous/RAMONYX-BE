@@ -154,6 +154,8 @@ async def auth_headers(test_user: User) -> dict:
 
 
 @pytest_asyncio.fixture(scope="function")
+from sqlalchemy import select
+
 async def sample_permissions(db_session: AsyncSession) -> list[Permission]:
     """Create sample permissions for testing."""
     permissions_data = [

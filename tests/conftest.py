@@ -19,6 +19,7 @@ from app.database import get_db
 from app.main import app
 from app.models.auth import Permission, Role, User
 from app.models.base import Base
+from sqlalchemy import select
 
 
 # Load test database URL from .env.test file
@@ -152,10 +153,7 @@ async def auth_headers(test_user: User) -> dict:
     access_token = create_access_token(subject=str(test_user.id))
     return {"Authorization": f"Bearer {access_token}"}
 
-
 @pytest_asyncio.fixture(scope="function")
-from sqlalchemy import select
-
 async def sample_permissions(db_session: AsyncSession) -> list[Permission]:
     """Create sample permissions for testing."""
     permissions_data = [

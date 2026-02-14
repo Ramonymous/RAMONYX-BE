@@ -169,9 +169,16 @@ async def sample_permissions(db_session: AsyncSession) -> list[Permission]:
 
     permissions = []
     for code, description in permissions_data:
-        permission = Permission(id=uuid4(), code=code, description=description)
-        db_session.add(permission)
-        permissions.append(permission)
+        result = await db_session.execute(
+            select(Permission).where(Permission.code == code)
+        )
+        existing = result.scalars().first()
+        if not existing:
+            permission = Permission(id=uuid4(), code=code, description=description)
+            db_session.add(permission)
+            permissions.append(permission)
+        else:
+            permissions.append(existing)
 
     await db_session.commit()
     return permissions

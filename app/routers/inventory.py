@@ -1,6 +1,5 @@
 """Inventory management API endpoints"""
 
-from typing import List, Sequence
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -79,7 +78,7 @@ async def create_stock_ledger(
     _: User = Depends(require_permissions("inventory:create")),
 ):
     """Create a new stock ledger entry (trigger will update balance)"""
-    ledger_data = ledger.model_dump(exclude={'notes'})
+    ledger_data = ledger.model_dump(exclude={"notes"})
     db_ledger = StockLedger(**ledger_data)
     db.add(db_ledger)
     await db.commit()

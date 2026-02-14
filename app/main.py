@@ -7,7 +7,10 @@ from app.routers import auth, inventory, production, products, purchasing, sales
 # Create FastAPI application
 app = FastAPI(
     title=settings.app_name,
-    description="Backend API untuk sistem ERP dengan fitur inventory, production, purchasing, dan sales",
+    description=(
+        "Backend API untuk sistem ERP dengan fitur inventory, "
+        "production, purchasing, dan sales"
+    ),
     version="1.0.0",
     docs_url="/docs" if settings.is_development else None,
     redoc_url="/redoc" if settings.is_development else None,

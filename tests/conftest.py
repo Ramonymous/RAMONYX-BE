@@ -7,7 +7,6 @@ from collections.abc import AsyncGenerator, Generator
 from uuid import uuid7
 
 import os
-from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
@@ -21,23 +20,24 @@ from app.main import app
 from app.models.auth import Permission, Role, User
 from app.models.base import Base
 
+
 # Load test database URL from .env.test file
 def load_test_env():
     env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env.test")
     if os.path.exists(env_file):
-        with open(env_file, 'r') as f:
+        with open(env_file, "r") as f:
             for line in f:
-                if line.strip() and not line.startswith('#') and '=' in line:
-                    key, value = line.strip().split('=', 1)
+                if line.strip() and not line.startswith("#") and "=" in line:
+                    key, value = line.strip().split("=", 1)
                     os.environ[key] = value
+
 
 # Load environment variables
 load_test_env()
 
 # Test database URL from environment variable or fallback
 TEST_DATABASE_URL = os.getenv(
-    "TEST_DATABASE_URL", 
-    "postgresql+asyncpg://postgres:IPkmqb1V@localhost:5432/erp_test_db"
+    "TEST_DATABASE_URL", "postgresql+asyncpg://postgres:IPkmqb1V@localhost:5432/erp_test_db"
 )
 
 # Create test engine with connection pooling
@@ -47,11 +47,7 @@ test_engine = create_async_engine(
     future=True,
     poolclass=StaticPool,
     pool_pre_ping=True,
-    connect_args={
-        "server_settings": {
-            "application_name": "erp_test_suite"
-        }
-    }
+    connect_args={"server_settings": {"application_name": "erp_test_suite"}},
 )
 
 
@@ -74,7 +70,7 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
         poolclass=StaticPool,
         pool_pre_ping=True,
     )
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
@@ -83,7 +79,7 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    
+
     await engine.dispose()
 
 
@@ -97,8 +93,9 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     app.dependency_overrides[get_db] = override_get_db
 
     from httpx import ASGITransport
+
     transport = ASGITransport(app=app)
-    
+
     async with AsyncClient(transport=transport, base_url="http://test") as test_client:
         yield test_client
 

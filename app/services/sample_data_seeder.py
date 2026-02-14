@@ -617,10 +617,30 @@ class SampleDataSeeder:
 
             # Create initial ledger entry - trigger will auto-create stock balance
             await self.db.execute(
-                text("""
-                    INSERT INTO stock_ledgers (id, product_id, location_id, qty, transaction_type, ref_type, ref_id, created_by)
-                    VALUES (:id, :product_id, :location_id, :qty, :transaction_type, :ref_type, :ref_id, :created_by)
-                """),
+                text(
+                    """
+                    INSERT INTO stock_ledgers (
+                        id,
+                        product_id,
+                        location_id,
+                        qty,
+                        transaction_type,
+                        ref_type,
+                        ref_id,
+                        created_by
+                    )
+                    VALUES (
+                        :id,
+                        :product_id,
+                        :location_id,
+                        :qty,
+                        :transaction_type,
+                        :ref_type,
+                        :ref_id,
+                        :created_by
+                    )
+                    """
+                ),
                 {
                     "id": uuid.uuid7(),
                     "product_id": product[0],
@@ -644,10 +664,30 @@ class SampleDataSeeder:
 
             # Create initial ledger entry - trigger will auto-create stock balance
             await self.db.execute(
-                text("""
-                    INSERT INTO stock_ledgers (id, product_id, location_id, qty, transaction_type, ref_type, ref_id, created_by)
-                    VALUES (:id, :product_id, :location_id, :qty, :transaction_type, :ref_type, :ref_id, :created_by)
-                """),
+                text(
+                    """
+                    INSERT INTO stock_ledgers (
+                        id,
+                        product_id,
+                        location_id,
+                        qty,
+                        transaction_type,
+                        ref_type,
+                        ref_id,
+                        created_by
+                    )
+                    VALUES (
+                        :id,
+                        :product_id,
+                        :location_id,
+                        :qty,
+                        :transaction_type,
+                        :ref_type,
+                        :ref_id,
+                        :created_by
+                    )
+                    """
+                ),
                 {
                     "id": uuid.uuid7(),
                     "product_id": product[0],
@@ -730,10 +770,30 @@ class SampleDataSeeder:
 
         so1_id = uuid.uuid7()
         await self.db.execute(
-            text("""
-                INSERT INTO sales_orders (id, so_number, customer_id, order_date, delivery_date, status, notes, created_by)
-                VALUES (:id, :so_number, :customer_id, :order_date, :delivery_date, :status, :notes, :created_by)
-            """),
+            text(
+                """
+                INSERT INTO sales_orders (
+                    id,
+                    so_number,
+                    customer_id,
+                    order_date,
+                    delivery_date,
+                    status,
+                    notes,
+                    created_by
+                )
+                VALUES (
+                    :id,
+                    :so_number,
+                    :customer_id,
+                    :order_date,
+                    :delivery_date,
+                    :status,
+                    :notes,
+                    :created_by
+                )
+                """
+            ),
             {
                 "id": so1_id,
                 "so_number": "SO-2024-001",
@@ -769,10 +829,30 @@ class SampleDataSeeder:
         # SO for distributor - use raw SQL to avoid model issues
         so2_id = uuid.uuid7()
         await self.db.execute(
-            text("""
-                INSERT INTO sales_orders (id, so_number, customer_id, order_date, delivery_date, status, notes, created_by)
-                VALUES (:id, :so_number, :customer_id, :order_date, :delivery_date, :status, :notes, :created_by)
-            """),
+            text(
+                """
+                INSERT INTO sales_orders (
+                    id,
+                    so_number,
+                    customer_id,
+                    order_date,
+                    delivery_date,
+                    status,
+                    notes,
+                    created_by
+                )
+                VALUES (
+                    :id,
+                    :so_number,
+                    :customer_id,
+                    :order_date,
+                    :delivery_date,
+                    :status,
+                    :notes,
+                    :created_by
+                )
+                """
+            ),
             {
                 "id": so2_id,
                 "so_number": "SO-2024-002",

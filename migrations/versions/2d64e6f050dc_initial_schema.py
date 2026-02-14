@@ -400,7 +400,8 @@ def upgrade() -> None:
         sa.Column("duration_minutes", sa.Integer(), nullable=True),
         sa.Column("notes", sa.Text(), nullable=True),
         sa.CheckConstraint(
-            "(item_type = 'material' AND product_id IS NOT NULL AND work_center_id IS NULL) OR (item_type = 'operation' AND work_center_id IS NOT NULL AND product_id IS NULL)",
+            "(item_type = 'material' AND product_id IS NOT NULL AND work_center_id IS NULL) OR "
+            "(item_type = 'operation' AND work_center_id IS NOT NULL AND product_id IS NULL)",
             name="ck_bom_item_type_reference",
         ),
         sa.ForeignKeyConstraint(["bom_id"], ["boms.id"], ondelete="CASCADE"),

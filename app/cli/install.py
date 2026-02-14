@@ -365,7 +365,8 @@ async def interactive_install() -> int:
                         print("\n💡 You can create it manually:")
                         print(f"   createdb -h {host} -p {port} -U {username} {database}")
                         print(
-                            f"   OR: psql -h {host} -p {port} -U {username} -d postgres -c 'CREATE DATABASE \"{database}\";'"
+                            f"   OR: psql -h {host} -p {port} -U {username} "
+                            f"-d postgres -c 'CREATE DATABASE \"{database}\";'"
                         )
 
                         if not confirm("Retry?", default=True):

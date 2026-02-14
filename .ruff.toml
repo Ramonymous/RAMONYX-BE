@@ -3,9 +3,6 @@ target-version = "py311"
 
 [lint]
 select = ["E", "F", "W"]  # Only critical errors, syntax errors, and warnings
-ignore = [
-    "E501",  # line too long (handled by formatter)
-]
 
 [format]
 quote-style = "double"

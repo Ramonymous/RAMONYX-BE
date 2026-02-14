@@ -23,7 +23,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--seed-sample-data",
         action="store_true",
-        help="Create interconnected sample data across all modules (suppliers, customers, products, orders, etc.).",
+        help=(
+            "Create interconnected sample data across all modules "
+            "(suppliers, customers, products, orders, etc.)."
+        ),
     )
     parser.add_argument(
         "--bootstrap-admin",

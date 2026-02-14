@@ -62,7 +62,8 @@ class HealthChecker:
                 for table in essential_tables:
                     result = await db.execute(
                         text(
-                            f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{table}')"
+                            f"SELECT EXISTS (SELECT FROM information_schema.tables "
+                            f"WHERE table_name = '{table}')"
                         )
                     )
                     exists = result.scalar()
@@ -154,7 +155,8 @@ class HealthChecker:
     async def check_disk_space(self) -> bool:
         """Check available disk space."""
         try:
-            # This is a simplified check - in production, you'd want to check the actual data directory
+            # This is a simplified check - in production, you'd want to check
+            # the actual data directory
             self.add_info("Disk space check: Basic check passed")
             return True
 
@@ -225,8 +227,6 @@ class HealthChecker:
         print("🏥 Production Health Check")
         print("=" * 50)
         print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print()
-
         checks = [
             ("Database Connection", self.check_database_connection),
             ("Database Tables", self.check_database_tables),
@@ -274,7 +274,8 @@ class HealthChecker:
             print("🎉 All health checks passed!")
             return True
         print(
-            f"❌ Health check completed with {len(self.issues)} critical issue(s) and {len(self.warnings)} warning(s)"
+            f"❌ Health check completed with {len(self.issues)} critical issue(s) "
+            f"and {len(self.warnings)} warning(s)"
         )
         return False
 

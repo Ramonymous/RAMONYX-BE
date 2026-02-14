@@ -263,13 +263,17 @@ class DataCleaner:
 
                 # Estimate stock ledger savings
                 result = await db.execute(
-                    text("""
-                    SELECT
-                        COUNT(*) as total_entries,
-                        COUNT(*) FILTER (WHERE created_at < NOW() - INTERVAL '365 days') as old_entries,
-                        pg_size_pretty(pg_total_relation_size('stock_ledgers')) as total_size
-                    FROM stock_ledgers
-                """)
+                    text(
+                        """
+                        SELECT
+                            COUNT(*) as total_entries,
+                            COUNT(*) FILTER (
+                                WHERE created_at < NOW() - INTERVAL '365 days'
+                            ) as old_entries,
+                            pg_size_pretty(pg_total_relation_size('stock_ledgers')) as total_size
+                        FROM stock_ledgers
+                        """
+                    )
                 )
                 ledger_stats = result.fetchone()
 

@@ -132,6 +132,7 @@ jobs:
         DATABASE_URL: postgresql+asyncpg://postgres:password@localhost:5432/erp_test_db
       run: |
         uv run alembic upgrade head
+      working-directory: .
 
     - name: Run integration tests
       env:

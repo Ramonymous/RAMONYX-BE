@@ -151,6 +151,4 @@ async def delete_product(
         await db.commit()
     except Exception as e:
         await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail=f"Cannot delete product: {str(e)}"
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Cannot delete product: {str(e)}")

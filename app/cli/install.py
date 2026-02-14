@@ -121,9 +121,7 @@ def update_env_file(settings: dict) -> None:
 
     if not env_file.exists():
         print("⚠️  Warning: No .env file found. Creating new one.")
-        env_file.write_text(
-            "# Database\nDATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/erp_db\n\n"
-        )
+        env_file.write_text("# Database\nDATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/erp_db\n\n")
 
     # Read existing content
     content = env_file.read_text()
@@ -209,9 +207,7 @@ async def test_database_connection(url: str, db_name: Optional[str] = None) -> t
         return False, str(e)
 
 
-async def create_database(
-    postgres_url: str, database_name: str, host: str, port: str, username: str
-) -> tuple[bool, str]:
+async def create_database(postgres_url: str, database_name: str, host: str, port: str, username: str) -> tuple[bool, str]:
     """
     Create a new database.
 
@@ -220,9 +216,7 @@ async def create_database(
     """
     try:
         # Use AUTOCOMMIT isolation level for CREATE DATABASE
-        engine = create_async_engine(
-            postgres_url, echo=False, isolation_level="AUTOCOMMIT", pool_pre_ping=True
-        )
+        engine = create_async_engine(postgres_url, echo=False, isolation_level="AUTOCOMMIT", pool_pre_ping=True)
 
         async with engine.connect() as conn:
             # Check if database already exists using proper SQLAlchemy text()
@@ -331,26 +325,20 @@ async def interactive_install() -> int:
             error_lower = error.lower()
 
             # Check if database doesn't exist
-            if "database" in error_lower and (
-                "does not exist" in error_lower or f'"{database}"' in error_lower
-            ):
+            if "database" in error_lower and ("does not exist" in error_lower or f'"{database}"' in error_lower):
                 print(f"⚠️  Database '{database}' does not exist")
 
                 if confirm(f"Create database '{database}'?", default=True):
                     print(f"🔧 Creating database '{database}'...")
 
-                    create_success, create_error = await create_database(
-                        postgres_test_url, database, host, port, username
-                    )
+                    create_success, create_error = await create_database(postgres_test_url, database, host, port, username)
 
                     if create_success:
                         print(f"✅ Database '{database}' created successfully!")
 
                         # Verify connection to new database
                         print("   → Verifying new database connection...")
-                        verify_success, verify_error = await test_database_connection(
-                            target_db_url, database
-                        )
+                        verify_success, verify_error = await test_database_connection(target_db_url, database)
 
                         if verify_success:
                             print(f"✅ Connection to '{database}' verified!")
@@ -364,10 +352,7 @@ async def interactive_install() -> int:
                         print(f"❌ Failed to create database: {create_error}")
                         print("\n💡 You can create it manually:")
                         print(f"   createdb -h {host} -p {port} -U {username} {database}")
-                        print(
-                            f"   OR: psql -h {host} -p {port} -U {username} "
-                            f"-d postgres -c 'CREATE DATABASE \"{database}\";'"
-                        )
+                        print(f"   OR: psql -h {host} -p {port} -U {username} -d postgres -c 'CREATE DATABASE \"{database}\";'")
 
                         if not confirm("Retry?", default=True):
                             if confirm("Continue without database?", default=False):
@@ -506,12 +491,7 @@ async def interactive_install() -> int:
                 if seed_rbac_data:
                     print("\n📋 Seeding RBAC data...")
                     summary = await seed_rbac(db)
-                    print(
-                        f"✅ RBAC seed complete: "
-                        f"permissions={summary['permissions_created']}, "
-                        f"roles={summary['roles_created']}, "
-                        f"links={summary['role_permission_links_added']}"
-                    )
+                    print(f"✅ RBAC seed complete: permissions={summary['permissions_created']}, roles={summary['roles_created']}, links={summary['role_permission_links_added']}")
 
                 if seed_sample:
                     print("\n🌱 Seeding sample data...")
@@ -725,12 +705,7 @@ async def _run_non_interactive(args: argparse.Namespace) -> int:
         if args.seed_rbac:
             print("\n📋 Seeding RBAC...")
             summary = await seed_rbac(db)
-            print(
-                f"✅ RBAC seed complete: "
-                f"permissions={summary['permissions_created']}, "
-                f"roles={summary['roles_created']}, "
-                f"links={summary['role_permission_links_added']}"
-            )
+            print(f"✅ RBAC seed complete: permissions={summary['permissions_created']}, roles={summary['roles_created']}, links={summary['role_permission_links_added']}")
 
         # Seed sample data
         if args.seed_sample_data:
@@ -753,12 +728,7 @@ async def _run_non_interactive(args: argparse.Namespace) -> int:
                     password=args.admin_password,
                     role_name=args.admin_role,
                 )
-                print(
-                    f"✅ Admin user created: "
-                    f"username={user.username}, "
-                    f"email={user.email}, "
-                    f"role={args.admin_role}"
-                )
+                print(f"✅ Admin user created: username={user.username}, email={user.email}, role={args.admin_role}")
             except BootstrapError as exc:
                 print(f"❌ Admin creation failed: {exc}")
                 return 3
@@ -786,9 +756,7 @@ async def _run_non_interactive(args: argparse.Namespace) -> int:
 async def _run(args: argparse.Namespace) -> int:
     # Handle conflicting options
     if args.no_seed and (args.seed_rbac or args.seed_sample_data or args.create_admin):
-        print(
-            "❌ Error: --no-seed conflicts with --seed-rbac, --seed-sample-data, or --create-admin"
-        )
+        print("❌ Error: --no-seed conflicts with --seed-rbac, --seed-sample-data, or --create-admin")
         sys.exit(1)
 
     # Choose installation mode

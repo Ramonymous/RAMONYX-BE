@@ -23,10 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--seed-sample-data",
         action="store_true",
-        help=(
-            "Create interconnected sample data across all modules "
-            "(suppliers, customers, products, orders, etc.)."
-        ),
+        help=("Create interconnected sample data across all modules (suppliers, customers, products, orders, etc.)."),
     )
     parser.add_argument(
         "--bootstrap-admin",
@@ -73,9 +70,7 @@ async def _run(args: argparse.Namespace) -> int:
         if args.bootstrap_admin and not args.allow_existing_users:
             user_count = await db.scalar(select(func.count()).select_from(User))
             if user_count and user_count > 0:
-                print(
-                    "Abort: users already exist. Re-run with --allow-existing-users if intentional."
-                )
+                print("Abort: users already exist. Re-run with --allow-existing-users if intentional.")
                 return 2
 
         if args.seed_rbac:
@@ -111,14 +106,8 @@ async def _run(args: argparse.Namespace) -> int:
                 print(f"Bootstrap failed: {exc}")
                 return 3
 
-            hydrated_user = await db.scalar(
-                select(User)
-                .options(selectinload(User.roles).selectinload(Role.permissions))
-                .where(User.id == user.id)
-            )
-            role_names = sorted(
-                role.name for role in (hydrated_user.roles if hydrated_user else user.roles)
-            )
+            hydrated_user = await db.scalar(select(User).options(selectinload(User.roles).selectinload(Role.permissions)).where(User.id == user.id))
+            role_names = sorted(role.name for role in (hydrated_user.roles if hydrated_user else user.roles))
             print(
                 "Admin bootstrap complete:",
                 f"username={user.username}",

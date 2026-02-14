@@ -60,9 +60,7 @@ class Permission(Base):
     code: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
     description: Mapped[str | None] = mapped_column(String(255))
 
-    roles: Mapped[list[Role]] = relationship(
-        secondary=role_permissions, back_populates="permissions"
-    )
+    roles: Mapped[list[Role]] = relationship(secondary=role_permissions, back_populates="permissions")
 
 
 class Role(Base):
@@ -72,9 +70,7 @@ class Role(Base):
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     description: Mapped[str | None] = mapped_column(String(255))
 
-    permissions: Mapped[list[Permission]] = relationship(
-        secondary=role_permissions, back_populates="roles"
-    )
+    permissions: Mapped[list[Permission]] = relationship(secondary=role_permissions, back_populates="roles")
     users: Mapped[list[User]] = relationship(secondary=user_roles, back_populates="roles")
 
 

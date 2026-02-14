@@ -31,22 +31,16 @@ class PurchaseOrder(Base, TimestampMixin):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     po_number: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
-    supplier_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("suppliers.id", ondelete="RESTRICT"), nullable=False, index=True
-    )
+    supplier_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("suppliers.id", ondelete="RESTRICT"), nullable=False, index=True)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="draft", index=True)
     notes: Mapped[str | None] = mapped_column(Text)
-    created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL"), index=True
-    )
+    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), index=True)
 
     supplier: Mapped[Supplier] = relationship(back_populates="purchase_orders")
     # PERBAIKAN: hapus lazy="selectin" dari model — strategi loading
     # sebaiknya ditentukan per-query via options(selectinload(...)) agar
     # tidak mempengaruhi semua query secara global.
-    items: Mapped[list[PurchaseOrderItem]] = relationship(
-        back_populates="po", cascade="all, delete-orphan"
-    )
+    items: Mapped[list[PurchaseOrderItem]] = relationship(back_populates="po", cascade="all, delete-orphan")
     creator: Mapped[User | None] = relationship(foreign_keys=[created_by])
 
     __table_args__ = (Index("idx_po_status_created", "status", "created_at"),)
@@ -56,12 +50,8 @@ class PurchaseOrderItem(Base):
     __tablename__ = "purchase_order_items"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    po_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("purchase_orders.id", ondelete="CASCADE"), nullable=False, index=True
-    )
-    product_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True
-    )
+    po_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("purchase_orders.id", ondelete="CASCADE"), nullable=False, index=True)
+    product_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True)
     qty_ordered: Mapped[int] = mapped_column(Integer, nullable=False)
     qty_received: Mapped[int] = mapped_column(Integer, default=0)
     unit_price: Mapped[Decimal] = mapped_column(Numeric(15, 2), nullable=False)

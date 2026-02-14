@@ -12,9 +12,7 @@ class ProductBase(BaseModel):
     sku: str = Field(..., min_length=1, max_length=50, description="Stock Keeping Unit")
     name: str = Field(..., min_length=1, max_length=255, description="Nama produk")
     category: ProductCategory = Field(..., description="Kategori produk")
-    uom: str = Field(
-        ..., min_length=1, max_length=20, description="Unit of Measure (pcs, kg, m, dll)"
-    )
+    uom: str = Field(..., min_length=1, max_length=20, description="Unit of Measure (pcs, kg, m, dll)")
     supplier_id: uuid.UUID | None = Field(None, description="ID supplier (jika ada)")
     customer_id: uuid.UUID | None = Field(None, description="ID customer (jika ada)")
     meta_data: dict = Field(default_factory=dict, description="Metadata tambahan dalam JSON")

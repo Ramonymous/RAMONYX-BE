@@ -23,9 +23,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def _create_token(
-    subject: str, token_type: str, expires_delta: timedelta, claims: dict[str, Any] | None = None
-) -> str:
+def _create_token(subject: str, token_type: str, expires_delta: timedelta, claims: dict[str, Any] | None = None) -> str:
     now = datetime.now(UTC)
     payload: dict[str, Any] = {
         "sub": subject,

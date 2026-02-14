@@ -27,11 +27,7 @@ async def get_current_user(
     except (TokenError, ValueError, KeyError):
         raise credentials_exception
 
-    stmt = (
-        select(User)
-        .options(selectinload(User.roles).selectinload(Role.permissions))
-        .where(User.id == user_id)
-    )
+    stmt = select(User).options(selectinload(User.roles).selectinload(Role.permissions)).where(User.id == user_id)
     user = (await db.scalars(stmt)).first()
 
     if not user or not user.is_active or user.deleted_at is not None:
@@ -42,9 +38,7 @@ async def get_current_user(
 
 def require_permissions(*required_permissions: str) -> Callable:
     async def permission_guard(current_user: User = Depends(get_current_user)) -> User:
-        user_permissions = {
-            permission.code for role in current_user.roles for permission in role.permissions
-        }
+        user_permissions = {permission.code for role in current_user.roles for permission in role.permissions}
 
         if not set(required_permissions).issubset(user_permissions):
             raise HTTPException(

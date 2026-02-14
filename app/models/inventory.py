@@ -29,14 +29,10 @@ class Location(Base):
     code: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     type: Mapped[str] = mapped_column(String(50), nullable=False)
-    parent_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("locations.id", ondelete="SET NULL"), nullable=True
-    )
+    parent_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("locations.id", ondelete="SET NULL"), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    parent: Mapped[Location | None] = relationship(
-        back_populates="children", remote_side="Location.id"
-    )
+    parent: Mapped[Location | None] = relationship(back_populates="children", remote_side="Location.id")
     children: Mapped[list[Location]] = relationship(back_populates="parent")
 
     __table_args__ = (Index("idx_location_parent", "parent_id"),)
@@ -57,12 +53,8 @@ class Product(Base, TimestampMixin):
     uom: Mapped[str] = mapped_column(String(20), nullable=False)
     unit_price: Mapped[float] = mapped_column(Numeric(15, 2), default=0.0)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    supplier_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("suppliers.id", ondelete="SET NULL"), index=True
-    )
-    customer_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("customers.id", ondelete="SET NULL"), index=True
-    )
+    supplier_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("suppliers.id", ondelete="SET NULL"), index=True)
+    customer_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("customers.id", ondelete="SET NULL"), index=True)
     meta_data: Mapped[dict] = mapped_column(JSONB, default=dict)
 
     supplier: Mapped[Supplier | None] = relationship(back_populates="products")
@@ -88,12 +80,8 @@ class StockLedger(Base):
     # berdasarkan created_at (monthly). Implementasikan via Alembic migration.
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    product_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True
-    )
-    location_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("locations.id", ondelete="RESTRICT"), nullable=False, index=True
-    )
+    product_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True)
+    location_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("locations.id", ondelete="RESTRICT"), nullable=False, index=True)
     # Positif = stok masuk, negatif = stok keluar
     qty: Mapped[int] = mapped_column(Integer, nullable=False)
     transaction_type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
@@ -105,9 +93,7 @@ class StockLedger(Base):
         nullable=False,
         index=True,
     )
-    created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL")
-    )
+    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
 
     product: Mapped[Product] = relationship(back_populates="stock_entries")
     location: Mapped[Location] = relationship()
@@ -124,12 +110,8 @@ class StockBalance(Base):
     __tablename__ = "stock_balances"
     # Di-update via trigger PostgreSQL (lihat catatan SQL di migration).
 
-    product_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("products.id", ondelete="CASCADE"), primary_key=True
-    )
-    location_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("locations.id", ondelete="CASCADE"), primary_key=True
-    )
+    product_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("products.id", ondelete="CASCADE"), primary_key=True)
+    location_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("locations.id", ondelete="CASCADE"), primary_key=True)
     current_qty: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     last_updated: Mapped[datetime | None] = mapped_column(
         TIMESTAMP(timezone=True),

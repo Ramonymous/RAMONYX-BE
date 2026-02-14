@@ -157,9 +157,7 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["supplier_id"], ["suppliers.id"], ondelete="SET NULL"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "idx_product_meta_data_gin", "products", ["meta_data"], unique=False, postgresql_using="gin"
-    )
+    op.create_index("idx_product_meta_data_gin", "products", ["meta_data"], unique=False, postgresql_using="gin")
     op.create_index(op.f("ix_products_category"), "products", ["category"], unique=False)
     op.create_index(op.f("ix_products_customer_id"), "products", ["customer_id"], unique=False)
     op.create_index(op.f("ix_products_sku"), "products", ["sku"], unique=True)
@@ -188,19 +186,11 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["supplier_id"], ["suppliers.id"], ondelete="RESTRICT"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "idx_po_status_created", "purchase_orders", ["status", "created_at"], unique=False
-    )
-    op.create_index(
-        op.f("ix_purchase_orders_created_by"), "purchase_orders", ["created_by"], unique=False
-    )
-    op.create_index(
-        op.f("ix_purchase_orders_po_number"), "purchase_orders", ["po_number"], unique=True
-    )
+    op.create_index("idx_po_status_created", "purchase_orders", ["status", "created_at"], unique=False)
+    op.create_index(op.f("ix_purchase_orders_created_by"), "purchase_orders", ["created_by"], unique=False)
+    op.create_index(op.f("ix_purchase_orders_po_number"), "purchase_orders", ["po_number"], unique=True)
     op.create_index(op.f("ix_purchase_orders_status"), "purchase_orders", ["status"], unique=False)
-    op.create_index(
-        op.f("ix_purchase_orders_supplier_id"), "purchase_orders", ["supplier_id"], unique=False
-    )
+    op.create_index(op.f("ix_purchase_orders_supplier_id"), "purchase_orders", ["supplier_id"], unique=False)
     op.create_table(
         "role_permissions",
         sa.Column("role_id", sa.UUID(), nullable=False),
@@ -235,15 +225,9 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["customer_id"], ["customers.id"], ondelete="RESTRICT"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "idx_so_customer_status", "sales_orders", ["customer_id", "status"], unique=False
-    )
-    op.create_index(
-        op.f("ix_sales_orders_created_by"), "sales_orders", ["created_by"], unique=False
-    )
-    op.create_index(
-        op.f("ix_sales_orders_customer_id"), "sales_orders", ["customer_id"], unique=False
-    )
+    op.create_index("idx_so_customer_status", "sales_orders", ["customer_id", "status"], unique=False)
+    op.create_index(op.f("ix_sales_orders_created_by"), "sales_orders", ["created_by"], unique=False)
+    op.create_index(op.f("ix_sales_orders_customer_id"), "sales_orders", ["customer_id"], unique=False)
     op.create_index(op.f("ix_sales_orders_so_number"), "sales_orders", ["so_number"], unique=True)
     op.create_index(op.f("ix_sales_orders_status"), "sales_orders", ["status"], unique=False)
     op.create_table(
@@ -285,18 +269,14 @@ def upgrade() -> None:
         sa.Column("qty_received", sa.Integer(), nullable=False),
         sa.Column("unit_price", sa.Numeric(precision=15, scale=2), nullable=False),
         sa.CheckConstraint("qty_ordered > 0", name="ck_po_item_qty_ordered_positive"),
-        sa.CheckConstraint(
-            "qty_received <= qty_ordered", name="ck_po_item_qty_received_not_exceed"
-        ),
+        sa.CheckConstraint("qty_received <= qty_ordered", name="ck_po_item_qty_received_not_exceed"),
         sa.CheckConstraint("qty_received >= 0", name="ck_po_item_qty_received_non_negative"),
         sa.CheckConstraint("unit_price >= 0", name="ck_po_item_unit_price_non_negative"),
         sa.ForeignKeyConstraint(["po_id"], ["purchase_orders.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["product_id"], ["products.id"], ondelete="RESTRICT"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_purchase_order_items_po_id"), "purchase_order_items", ["po_id"], unique=False
-    )
+    op.create_index(op.f("ix_purchase_order_items_po_id"), "purchase_order_items", ["po_id"], unique=False)
     op.create_index(
         op.f("ix_purchase_order_items_product_id"),
         "purchase_order_items",
@@ -311,9 +291,7 @@ def upgrade() -> None:
         sa.Column("qty_ordered", sa.Integer(), nullable=False),
         sa.Column("qty_delivered", sa.Integer(), nullable=False),
         sa.Column("unit_price", sa.Numeric(precision=15, scale=2), nullable=False),
-        sa.CheckConstraint(
-            "qty_delivered <= qty_ordered", name="ck_so_item_qty_delivered_not_exceed"
-        ),
+        sa.CheckConstraint("qty_delivered <= qty_ordered", name="ck_so_item_qty_delivered_not_exceed"),
         sa.CheckConstraint("qty_delivered >= 0", name="ck_so_item_qty_delivered_non_negative"),
         sa.CheckConstraint("qty_ordered > 0", name="ck_so_item_qty_ordered_positive"),
         sa.CheckConstraint("unit_price >= 0", name="ck_so_item_unit_price_non_negative"),
@@ -321,12 +299,8 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["so_id"], ["sales_orders.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_sales_order_items_product_id"), "sales_order_items", ["product_id"], unique=False
-    )
-    op.create_index(
-        op.f("ix_sales_order_items_so_id"), "sales_order_items", ["so_id"], unique=False
-    )
+    op.create_index(op.f("ix_sales_order_items_product_id"), "sales_order_items", ["product_id"], unique=False)
+    op.create_index(op.f("ix_sales_order_items_so_id"), "sales_order_items", ["so_id"], unique=False)
     op.create_table(
         "stock_balances",
         sa.Column("product_id", sa.Uuid(), nullable=False),
@@ -363,9 +337,7 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["product_id"], ["products.id"], ondelete="RESTRICT"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "idx_ledger_product_location", "stock_ledgers", ["product_id", "location_id"], unique=False
-    )
+    op.create_index("idx_ledger_product_location", "stock_ledgers", ["product_id", "location_id"], unique=False)
     op.create_index(
         "idx_ledger_product_location_created",
         "stock_ledgers",
@@ -373,15 +345,9 @@ def upgrade() -> None:
         unique=False,
     )
     op.create_index("idx_ledger_ref", "stock_ledgers", ["ref_type", "ref_id"], unique=False)
-    op.create_index(
-        op.f("ix_stock_ledgers_created_at"), "stock_ledgers", ["created_at"], unique=False
-    )
-    op.create_index(
-        op.f("ix_stock_ledgers_location_id"), "stock_ledgers", ["location_id"], unique=False
-    )
-    op.create_index(
-        op.f("ix_stock_ledgers_product_id"), "stock_ledgers", ["product_id"], unique=False
-    )
+    op.create_index(op.f("ix_stock_ledgers_created_at"), "stock_ledgers", ["created_at"], unique=False)
+    op.create_index(op.f("ix_stock_ledgers_location_id"), "stock_ledgers", ["location_id"], unique=False)
+    op.create_index(op.f("ix_stock_ledgers_product_id"), "stock_ledgers", ["product_id"], unique=False)
     op.create_index(
         op.f("ix_stock_ledgers_transaction_type"),
         "stock_ledgers",
@@ -400,8 +366,7 @@ def upgrade() -> None:
         sa.Column("duration_minutes", sa.Integer(), nullable=True),
         sa.Column("notes", sa.Text(), nullable=True),
         sa.CheckConstraint(
-            "(item_type = 'material' AND product_id IS NOT NULL AND work_center_id IS NULL) OR "
-            "(item_type = 'operation' AND work_center_id IS NOT NULL AND product_id IS NULL)",
+            "(item_type = 'material' AND product_id IS NOT NULL AND work_center_id IS NULL) OR (item_type = 'operation' AND work_center_id IS NOT NULL AND product_id IS NULL)",
             name="ck_bom_item_type_reference",
         ),
         sa.ForeignKeyConstraint(["bom_id"], ["boms.id"], ondelete="CASCADE"),
@@ -413,9 +378,7 @@ def upgrade() -> None:
     op.create_index("idx_bom_items_bom_seq", "bom_items", ["bom_id", "sequence"], unique=False)
     op.create_index(op.f("ix_bom_items_bom_id"), "bom_items", ["bom_id"], unique=False)
     op.create_index(op.f("ix_bom_items_product_id"), "bom_items", ["product_id"], unique=False)
-    op.create_index(
-        op.f("ix_bom_items_work_center_id"), "bom_items", ["work_center_id"], unique=False
-    )
+    op.create_index(op.f("ix_bom_items_work_center_id"), "bom_items", ["work_center_id"], unique=False)
     op.create_table(
         "production_orders",
         sa.Column("id", sa.Uuid(), nullable=False),
@@ -447,30 +410,18 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["so_item_id"], ["sales_order_items.id"], ondelete="SET NULL"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "idx_prod_order_status_created", "production_orders", ["status", "created_at"], unique=False
-    )
-    op.create_index(
-        op.f("ix_production_orders_bom_id"), "production_orders", ["bom_id"], unique=False
-    )
-    op.create_index(
-        op.f("ix_production_orders_created_by"), "production_orders", ["created_by"], unique=False
-    )
+    op.create_index("idx_prod_order_status_created", "production_orders", ["status", "created_at"], unique=False)
+    op.create_index(op.f("ix_production_orders_bom_id"), "production_orders", ["bom_id"], unique=False)
+    op.create_index(op.f("ix_production_orders_created_by"), "production_orders", ["created_by"], unique=False)
     op.create_index(
         op.f("ix_production_orders_order_number"),
         "production_orders",
         ["order_number"],
         unique=True,
     )
-    op.create_index(
-        op.f("ix_production_orders_product_id"), "production_orders", ["product_id"], unique=False
-    )
-    op.create_index(
-        op.f("ix_production_orders_so_item_id"), "production_orders", ["so_item_id"], unique=False
-    )
-    op.create_index(
-        op.f("ix_production_orders_status"), "production_orders", ["status"], unique=False
-    )
+    op.create_index(op.f("ix_production_orders_product_id"), "production_orders", ["product_id"], unique=False)
+    op.create_index(op.f("ix_production_orders_so_item_id"), "production_orders", ["so_item_id"], unique=False)
+    op.create_index(op.f("ix_production_orders_status"), "production_orders", ["status"], unique=False)
 
     # =========================================================================
     # DATABASE TRIGGERS
@@ -617,9 +568,7 @@ def downgrade() -> None:
     op.drop_table("work_centers")
     op.drop_index(op.f("ix_users_username"), table_name="users")
     op.drop_index(op.f("ix_users_email"), table_name="users")
-    op.drop_index(
-        "idx_users_active", table_name="users", postgresql_where=sa.text("deleted_at IS NULL")
-    )
+    op.drop_index("idx_users_active", table_name="users", postgresql_where=sa.text("deleted_at IS NULL"))
     op.drop_table("users")
     op.drop_index(op.f("ix_suppliers_code"), table_name="suppliers")
     op.drop_table("suppliers")

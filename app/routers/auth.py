@@ -30,9 +30,7 @@ from app.services import BootstrapError, bootstrap_admin_user, seed_rbac
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post(
-    "/bootstrap-admin", response_model=BootstrapAdminResponse, status_code=status.HTTP_201_CREATED
-)
+@router.post("/bootstrap-admin", response_model=BootstrapAdminResponse, status_code=status.HTTP_201_CREATED)
 async def bootstrap_admin(
     payload: BootstrapAdminRequest,
     db: AsyncSession = Depends(get_db),
@@ -56,9 +54,7 @@ async def bootstrap_admin(
             detail="Bootstrap disabled because users already exist",
         )
 
-    existing_target = await db.scalar(
-        select(User).where(or_(User.username == payload.username, User.email == payload.email))
-    )
+    existing_target = await db.scalar(select(User).where(or_(User.username == payload.username, User.email == payload.email)))
     if existing_target:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -98,18 +94,10 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
 ) -> TokenPair:
-    stmt = (
-        select(User)
-        .options(selectinload(User.roles).selectinload(Role.permissions))
-        .where(User.username == form_data.username)
-    )
+    stmt = select(User).options(selectinload(User.roles).selectinload(Role.permissions)).where(User.username == form_data.username)
     user = (await db.scalars(stmt)).first()
 
-    if (
-        not user
-        or user.deleted_at is not None
-        or not verify_password(form_data.password, user.hashed_password)
-    ):
+    if not user or user.deleted_at is not None or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -153,11 +141,7 @@ async def refresh_tokens(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    stmt = (
-        select(User)
-        .options(selectinload(User.roles).selectinload(Role.permissions))
-        .where(User.id == user_id)
-    )
+    stmt = select(User).options(selectinload(User.roles).selectinload(Role.permissions)).where(User.id == user_id)
     user = (await db.scalars(stmt)).first()
 
     if not user or user.deleted_at is not None or not user.is_active:

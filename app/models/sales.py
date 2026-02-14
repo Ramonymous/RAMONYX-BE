@@ -34,22 +34,16 @@ class SalesOrder(Base, TimestampMixin):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
     so_number: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
-    customer_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("customers.id", ondelete="RESTRICT"), nullable=False, index=True
-    )
+    customer_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("customers.id", ondelete="RESTRICT"), nullable=False, index=True)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="draft", index=True)
     order_date: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     delivery_date: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     total_amount: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0.0)
     notes: Mapped[str | None] = mapped_column(Text)
-    created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL"), index=True
-    )
+    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), index=True)
 
     customer: Mapped[Customer] = relationship(back_populates="sales_orders")
-    items: Mapped[list[SalesOrderItem]] = relationship(
-        back_populates="so", cascade="all, delete-orphan"
-    )
+    items: Mapped[list[SalesOrderItem]] = relationship(back_populates="so", cascade="all, delete-orphan")
     creator: Mapped[User | None] = relationship(foreign_keys=[created_by])
 
     __table_args__ = (Index("idx_so_customer_status", "customer_id", "status"),)
@@ -59,12 +53,8 @@ class SalesOrderItem(Base):
     __tablename__ = "sales_order_items"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
-    so_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("sales_orders.id", ondelete="CASCADE"), nullable=False, index=True
-    )
-    product_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True
-    )
+    so_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sales_orders.id", ondelete="CASCADE"), nullable=False, index=True)
+    product_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True)
     qty_ordered: Mapped[int] = mapped_column(Integer, nullable=False)
     qty_delivered: Mapped[int] = mapped_column(Integer, default=0)
     unit_price: Mapped[Decimal] = mapped_column(Numeric(15, 2), nullable=False)

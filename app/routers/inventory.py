@@ -124,9 +124,7 @@ async def create_stock_movement(
             quantity=movement.quantity,
             reference_type="STOCK_MOVEMENT",
             reference_id=str(uuid.uuid7()),
-            notes=f"Transfer from location {movement.from_location_id}"
-            if movement.from_location_id
-            else "Stock in",
+            notes=f"Transfer from location {movement.from_location_id}" if movement.from_location_id else "Stock in",
         )
         ledger_entries.append(in_ledger)
 

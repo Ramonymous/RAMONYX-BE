@@ -60,12 +60,7 @@ class HealthChecker:
                 empty_tables = []
 
                 for table in essential_tables:
-                    result = await db.execute(
-                        text(
-                            f"SELECT EXISTS (SELECT FROM information_schema.tables "
-                            f"WHERE table_name = '{table}')"
-                        )
-                    )
+                    result = await db.execute(text(f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{table}')"))
                     exists = result.scalar()
 
                     if not exists:
@@ -273,10 +268,7 @@ class HealthChecker:
         if all_passed and not self.issues:
             print("🎉 All health checks passed!")
             return True
-        print(
-            f"❌ Health check completed with {len(self.issues)} critical issue(s) "
-            f"and {len(self.warnings)} warning(s)"
-        )
+        print(f"❌ Health check completed with {len(self.issues)} critical issue(s) and {len(self.warnings)} warning(s)")
         return False
 
 

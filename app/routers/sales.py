@@ -102,15 +102,11 @@ async def create_sales_order(
     products = {p.id: p for p in products_result.scalars().all()}
 
     if len(products) != len(product_ids):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="One or more products not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="One or more products not found")
 
     # Generate SO number if not provided
     if not order_data.so_number:
-        last_so = await db.execute(
-            select(SalesOrder).order_by(SalesOrder.so_number.desc()).limit(1)
-        )
+        last_so = await db.execute(select(SalesOrder).order_by(SalesOrder.so_number.desc()).limit(1))
         last_so_number = last_so.scalar_one_or_none()
         if last_so_number and last_so_number.so_number:
             try:

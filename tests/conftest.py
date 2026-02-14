@@ -36,9 +36,7 @@ def load_test_env():
 load_test_env()
 
 # Test database URL from environment variable or fallback
-TEST_DATABASE_URL = os.getenv(
-    "TEST_DATABASE_URL", "postgresql+asyncpg://postgres:IPkmqb1V@localhost:5432/erp_test_db"
-)
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "postgresql+asyncpg://postgres:IPkmqb1V@localhost:5432/erp_test_db")
 
 # Create test engine with connection pooling
 test_engine = create_async_engine(

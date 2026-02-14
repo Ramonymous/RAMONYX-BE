@@ -431,9 +431,7 @@ class SampleDataSeeder:
         # Use raw SQL to avoid ORM enum validation issues
         from sqlalchemy import text
 
-        result = await self.db.execute(
-            text("SELECT id FROM products WHERE sku = :sku"), {"sku": sku}
-        )
+        result = await self.db.execute(text("SELECT id FROM products WHERE sku = :sku"), {"sku": sku})
         product_id = result.scalar_one_or_none()
         if product_id is None:
             raise ValueError(f"Product with SKU {sku} not found")
@@ -451,17 +449,13 @@ class SampleDataSeeder:
         from sqlalchemy import text
 
         # Find the product ID first
-        product_result = await self.db.execute(
-            text("SELECT id FROM products WHERE sku = :sku"), {"sku": sku}
-        )
+        product_result = await self.db.execute(text("SELECT id FROM products WHERE sku = :sku"), {"sku": sku})
         product_id = product_result.scalar_one_or_none()
         if not product_id:
             raise ValueError(f"Product with SKU {sku} not found")
 
         # Find the BOM for this product
-        bom_result = await self.db.execute(
-            text("SELECT id FROM boms WHERE product_id = :product_id"), {"product_id": product_id}
-        )
+        bom_result = await self.db.execute(text("SELECT id FROM boms WHERE product_id = :product_id"), {"product_id": product_id})
         bom_id = bom_result.scalar_one_or_none()
         if not bom_id:
             raise ValueError(f"BOM for product with SKU {sku} not found")
@@ -473,9 +467,7 @@ class SampleDataSeeder:
         """Create Bills of Materials for finished products"""
         # BOM for Industrial Water Pump
         pump_product = await self.find_product_by_sku("PUMP-001")
-        pump_bom = BOM(
-            product_id=pump_product.id, bom_name="Water Pump 10HP Standard BOM", is_active=True
-        )
+        pump_bom = BOM(product_id=pump_product.id, bom_name="Water Pump 10HP Standard BOM", is_active=True)
         self.db.add(pump_bom)
         await self.db.flush()  # Flush to get the BOM ID
 
@@ -540,9 +532,7 @@ class SampleDataSeeder:
 
         # BOM for Conveyor Belt System
         conv_product = await self.find_product_by_sku("CONV-001")
-        conv_bom = BOM(
-            product_id=conv_product.id, bom_name="Conveyor Belt System BOM", is_active=True
-        )
+        conv_bom = BOM(product_id=conv_product.id, bom_name="Conveyor Belt System BOM", is_active=True)
         self.db.add(conv_bom)
         await self.db.flush()  # Flush to get the BOM ID
 
@@ -606,9 +596,7 @@ class SampleDataSeeder:
 
         from sqlalchemy import text
 
-        raw_materials_result = await self.db.execute(
-            text("SELECT id, sku FROM products WHERE category = 'material'")
-        )
+        raw_materials_result = await self.db.execute(text("SELECT id, sku FROM products WHERE category = 'material'"))
         raw_materials = raw_materials_result.fetchall()
 
         for i, product in enumerate(raw_materials):
@@ -654,9 +642,7 @@ class SampleDataSeeder:
             )
 
         # Create initial stock for parts
-        parts_result = await self.db.execute(
-            text("SELECT id, sku FROM products WHERE category = 'parts'")
-        )
+        parts_result = await self.db.execute(text("SELECT id, sku FROM products WHERE category = 'parts'"))
         parts = parts_result.fetchall()
         for i, product in enumerate(parts):
             location = warehouse_bins[(i + 3) % len(warehouse_bins)]

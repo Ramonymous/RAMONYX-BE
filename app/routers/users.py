@@ -99,18 +99,14 @@ async def create_role(
         raise HTTPException(status_code=400, detail="Role name already exists")
 
     # Create role
-    db_role = Role(
-        id=uuid.uuid7(), name=role.name, description=role.description, is_active=role.is_active
-    )
+    db_role = Role(id=uuid.uuid7(), name=role.name, description=role.description, is_active=role.is_active)
     db.add(db_role)
 
     # Add permissions to role
     if role.permission_ids:
         for permission_id in role.permission_ids:
             # Verify permission exists
-            permission_result = await db.execute(
-                select(Permission).where(Permission.id == permission_id)
-            )
+            permission_result = await db.execute(select(Permission).where(Permission.id == permission_id))
             if permission_result.scalar_one_or_none():
                 db_role.permissions.append(permission_result.scalar_one())
 
@@ -150,11 +146,7 @@ async def get_user_profile(
     _: User = Depends(require_permissions("users:read")),
 ):
     """Get user profile with roles and permissions"""
-    result = await db.execute(
-        select(User)
-        .options(selectinload(User.roles).selectinload(Role.permissions))
-        .where(User.id == user_id)
-    )
+    result = await db.execute(select(User).options(selectinload(User.roles).selectinload(Role.permissions)).where(User.id == user_id))
     user = result.scalar_one_or_none()
 
     if not user:

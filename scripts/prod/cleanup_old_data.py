@@ -23,9 +23,7 @@ class DataCleaner:
 
     def add_action(self, message: str, count: int = 0) -> None:
         prefix = "Would" if self.dry_run else "Will"
-        self.actions.append(
-            f"🔧 {prefix} {message} ({count} records)" if count else f"🔧 {prefix} {message}"
-        )
+        self.actions.append(f"🔧 {prefix} {message} ({count} records)" if count else f"🔧 {prefix} {message}")
 
     def add_warning(self, message: str) -> None:
         self.warnings.append(f"⚠️  {message}")
@@ -53,9 +51,7 @@ class DataCleaner:
                     self.add_info("No old stock ledger entries to archive")
                     return 0
 
-                self.add_action(
-                    f"archive stock ledger entries older than {days_to_keep} days", old_count
-                )
+                self.add_action(f"archive stock ledger entries older than {days_to_keep} days", old_count)
 
                 if not self.dry_run:
                     # Create archive table if it doesn't exist
@@ -129,9 +125,7 @@ class DataCleaner:
                     self.add_info("No old sessions to clean up")
                     return 0
 
-                self.add_action(
-                    f"delete sessions older than {days_to_keep} days or expired", old_count
-                )
+                self.add_action(f"delete sessions older than {days_to_keep} days or expired", old_count)
 
                 if not self.dry_run:
                     await db.execute(
@@ -375,9 +369,7 @@ Examples:
         """,
     )
 
-    parser.add_argument(
-        "--execute", action="store_true", help="Actually perform cleanup (default: dry run)"
-    )
+    parser.add_argument("--execute", action="store_true", help="Actually perform cleanup (default: dry run)")
 
     parser.add_argument(
         "--stock-ledgers",
@@ -386,17 +378,11 @@ Examples:
         help="Days to keep stock ledger entries (default: 365)",
     )
 
-    parser.add_argument(
-        "--sessions", type=int, default=30, help="Days to keep sessions (default: 30)"
-    )
+    parser.add_argument("--sessions", type=int, default=30, help="Days to keep sessions (default: 30)")
 
-    parser.add_argument(
-        "--audit-logs", type=int, default=90, help="Days to keep audit logs (default: 90)"
-    )
+    parser.add_argument("--audit-logs", type=int, default=90, help="Days to keep audit logs (default: 90)")
 
-    parser.add_argument(
-        "--temp-files", type=int, default=7, help="Days to keep temp files (default: 7)"
-    )
+    parser.add_argument("--temp-files", type=int, default=7, help="Days to keep temp files (default: 7)")
 
     args = parser.parse_args()
 

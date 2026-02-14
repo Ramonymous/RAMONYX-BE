@@ -17,9 +17,7 @@ try:
     DATABASE_URL = settings.database_url
 except Exception:
     # Fallback to direct URL or environment variable
-    DATABASE_URL = os.getenv(
-        "DATABASE_URL", "postgresql+asyncpg://postgres:password@localhost:5432/erp_db"
-    )
+    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:password@localhost:5432/erp_db")
 
 from app.models import Base  # Import your Base from models
 

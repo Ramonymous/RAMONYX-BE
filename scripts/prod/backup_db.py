@@ -159,12 +159,8 @@ Examples:
         """,
     )
 
-    parser.add_argument(
-        "--dir", type=str, default="backups", help="Backup directory (default: backups)"
-    )
-    parser.add_argument(
-        "--retention", type=int, default=30, help="Retention period in days (default: 30)"
-    )
+    parser.add_argument("--dir", type=str, default="backups", help="Backup directory (default: backups)")
+    parser.add_argument("--retention", type=int, default=30, help="Retention period in days (default: 30)")
     parser.add_argument("--list", action="store_true", help="List existing backups")
 
     args = parser.parse_args()

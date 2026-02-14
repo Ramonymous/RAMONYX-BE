@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class Supplier(Base, TimestampMixin):
     __tablename__ = "suppliers"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     code: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     contact_info: Mapped[dict] = mapped_column(JSONB, default=dict)
@@ -34,7 +34,7 @@ class Supplier(Base, TimestampMixin):
 class Customer(Base, TimestampMixin):
     __tablename__ = "customers"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     code: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     contact_info: Mapped[dict] = mapped_column(JSONB, default=dict)

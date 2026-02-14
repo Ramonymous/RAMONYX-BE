@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 class PurchaseOrder(Base, TimestampMixin):
     __tablename__ = "purchase_orders"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     po_number: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     supplier_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("suppliers.id", ondelete="RESTRICT"), nullable=False, index=True)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="draft", index=True)
@@ -49,7 +49,7 @@ class PurchaseOrder(Base, TimestampMixin):
 class PurchaseOrderItem(Base):
     __tablename__ = "purchase_order_items"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     po_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("purchase_orders.id", ondelete="CASCADE"), nullable=False, index=True)
     product_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True)
     qty_ordered: Mapped[int] = mapped_column(Integer, nullable=False)

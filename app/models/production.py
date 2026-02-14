@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 class WorkCenter(Base):
     __tablename__ = "work_centers"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     type: Mapped[str] = mapped_column(String(50), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -42,7 +42,7 @@ class WorkCenter(Base):
 class BOM(Base, TimestampMixin):
     __tablename__ = "boms"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     product_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True)
     bom_name: Mapped[str | None] = mapped_column(String(100))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -54,7 +54,7 @@ class BOM(Base, TimestampMixin):
 class BOMItem(Base):
     __tablename__ = "bom_items"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     bom_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("boms.id", ondelete="CASCADE"), nullable=False, index=True)
     sequence: Mapped[int] = mapped_column(Integer, nullable=False)
     item_type: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -84,7 +84,7 @@ class BOMItem(Base):
 class ProductionOrder(Base, TimestampMixin):
     __tablename__ = "production_orders"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     order_number: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     product_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True)
     bom_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("boms.id", ondelete="RESTRICT"), nullable=False, index=True)

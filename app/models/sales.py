@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 class SalesOrder(Base, TimestampMixin):
     __tablename__ = "sales_orders"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     so_number: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     customer_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("customers.id", ondelete="RESTRICT"), nullable=False, index=True)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="draft", index=True)
@@ -52,7 +52,7 @@ class SalesOrder(Base, TimestampMixin):
 class SalesOrderItem(Base):
     __tablename__ = "sales_order_items"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid7)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     so_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sales_orders.id", ondelete="CASCADE"), nullable=False, index=True)
     product_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("products.id", ondelete="RESTRICT"), nullable=False, index=True)
     qty_ordered: Mapped[int] = mapped_column(Integer, nullable=False)

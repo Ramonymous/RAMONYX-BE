@@ -754,7 +754,7 @@ class SampleDataSeeder:
         # SO for retail customer - use raw SQL to avoid model issues
         from sqlalchemy import text
 
-        so1_id = uuid.uuid7()
+        so1_id = uuid.uuid4()
         await self.db.execute(
             text(
                 """
@@ -813,7 +813,7 @@ class SampleDataSeeder:
             self.data["sales_order_items"].append(item)
 
         # SO for distributor - use raw SQL to avoid model issues
-        so2_id = uuid.uuid7()
+        so2_id = uuid.uuid4()
         await self.db.execute(
             text(
                 """

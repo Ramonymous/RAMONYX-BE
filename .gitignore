@@ -61,9 +61,6 @@ Thumbs.db
 htmlcov/
 .tox/
 
-# Alembic
-alembic.ini
-
 # Temporary scripts
 check_*.py
 test_*.py
